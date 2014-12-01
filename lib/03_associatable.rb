@@ -6,8 +6,7 @@ class AssocOptions
   attr_accessor(
     :foreign_key,
     :class_name,
-    :primary_key,
-    :table_name
+    :primary_key
   )
 
 
@@ -60,7 +59,14 @@ end
 module Associatable
   # Phase IIIb
   def belongs_to(name, options = {})
-    # ...
+    options = BelongsToOptions.new(name.to_s, options)
+
+    define_method(name) do
+      class_name = options.model_class
+      foreign_key_value = self.send(:attributes)[options.foreign_key]
+
+      class_name.where({id: foreign_key_value}).first
+    end
   end
 
   def has_many(name, options = {})
