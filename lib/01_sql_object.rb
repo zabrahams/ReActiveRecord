@@ -95,6 +95,7 @@ class SQLObject
     cols = self.class.columns
     cols.delete(:id)
     non_id_attributes = attribute_values[1..-1]
+
     DBConnection.execute(<<-SQL, *non_id_attributes)
       INSERT INTO
         #{table} (#{cols.join(", ")})
@@ -109,7 +110,21 @@ class SQLObject
   end
 
   def update
-    # ...
+    table = self.class.table_name
+    cols = self.class.columns
+    attr_values = attribute_values
+    attr_values << attr_values[0]
+
+    DBConnection.execute(<<-SQL, *attr_values)
+      UPDATE
+        #{table}
+      SET
+        #{ cols.map { |column| "#{column} = ?" }.join(", ") }
+      WHERE
+        id = ?
+    SQL
+
+    self
   end
 
   def save
