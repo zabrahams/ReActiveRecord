@@ -72,6 +72,7 @@ module Associatable
 
   def has_many(name, options = {})
     options = HasManyOptions.new(name, self.name, options)
+    assoc_options[name] = options
 
     define_method(name) do
       target_class = options.model_class
