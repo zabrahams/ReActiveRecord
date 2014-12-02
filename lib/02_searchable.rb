@@ -6,12 +6,7 @@ module Searchable
     where_line = params.keys.map { |key| "#{key}= ?"}.join(" AND ")
     values = params.values
 
-    if self.class == Relation
-      self.stack(where_line, values)
-    else
-      Relation.new(self, table_name, where_line, values)
-    end
-
+    Relation.new(self, table_name, where_line, values)
   end
 end
 
@@ -20,7 +15,6 @@ class SQLObject
 end
 
 class Relation
-  include Searchable
 
   def initialize(target_class, table_name, where_line, values)
     @target_class = target_class
@@ -29,7 +23,9 @@ class Relation
     @values = values
   end
 
-  def stack(new_where_line, new_values)
+  def where(params)
+    where_line = params.keys.map { |key| "#{key}= ?"}.join(" AND ")
+    values = params.values
     @where_line = "(#{@where_line}) AND (#{new_where_line})"
     @values = @values + new_values
     self
@@ -80,7 +76,7 @@ end
 #     WHERE
 #     #{where_line}
 #     SQL
-# 
+#
 #     self.parse_all(results)
 #   end
 # end
