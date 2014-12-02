@@ -74,6 +74,14 @@ module Associatable
     options = HasManyOptions.new(name, self.name, options)
     assoc_options[name] = options
 
+    # if options.through
+    #   if XXXX && XXXX
+    #     return (has_many_belongs_to(name, through_name, source_name))
+    #   elsif XXXX && XXXX
+    #     return (belongs_to_has_many(name, through_name, source_name))
+    #   end
+    # end
+
     define_method(name) do
       target_class = options.model_class
       primary_key_value = self.send(options.primary_key)
