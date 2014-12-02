@@ -34,8 +34,7 @@ class SQLObject
   end
 
   def self.table_name
-    @table_name = self.name.tableize unless @table_name
-    @table_name
+    @table_name ||= self.name.tableize
   end
 
   def self.all
@@ -82,7 +81,7 @@ class SQLObject
   end
 
   def attributes
-    @attributes || @attributes = {}
+    @attributes ||= {}
   end
 
   def attribute_values
@@ -128,6 +127,6 @@ class SQLObject
   end
 
   def save
-    attributes[:id].nil? ? insert : update
+    id.nil? ? insert : update
   end
 end

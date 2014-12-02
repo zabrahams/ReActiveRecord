@@ -60,12 +60,13 @@ module Associatable
   # Phase IIIb
   def belongs_to(name, options = {})
     options = BelongsToOptions.new(name, options)
+    assoc_options[name] = options
 
     define_method(name) do
       target_class = options.model_class
-      foreign_key_value = self.send(:attributes)[options.foreign_key]
+      foreign_key_value = self.send(options.foreign_key)
 
-      target_class.where({options.primary_key => foreign_key_value}).first
+      target_class.where(options.primary_key => foreign_key_value).first
     end
   end
 
@@ -74,15 +75,15 @@ module Associatable
 
     define_method(name) do
       target_class = options.model_class
-      primary_key_value = self.send(:attributes)[options.primary_key]
+      primary_key_value = self.send(options.primary_key)
 
-      target_class.where({options.foreign_key => primary_key_value})
+      target_class.where(options.foreign_key => primary_key_value)
     end
   end
 
   def assoc_options
     # Wait to implement this in Phase IVa. Modify `belongs_to`, too.
-    @assoc_options = {}
+    @assoc_options ||= {}
   end
 end
 

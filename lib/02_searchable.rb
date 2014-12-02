@@ -23,3 +23,6 @@ end
 class SQLObject
   extend Searchable
 end
+
+class Relation
+end
