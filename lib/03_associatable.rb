@@ -15,14 +15,14 @@ class AssocOptions
   end
 
   def table_name
-    Module.const_get(class_name).table_name || class_name.tableize
+    model_class.table_name || class_name.tableize
   end
 end
 
 class BelongsToOptions < AssocOptions
   def initialize(name, options = {})
     defaults = {
-      class_name: name.camelcase,
+      class_name: name.to_s.camelcase,
       foreign_key: :"#{name}_id",
       primary_key: :id
     }
@@ -41,7 +41,7 @@ end
 class HasManyOptions < AssocOptions
   def initialize(name, self_class_name, options = {})
     defaults = {
-      class_name: name.camelcase.singularize,
+      class_name: name.to_s.camelcase.singularize,
       foreign_key: :"#{self_class_name.underscore}_id",
       primary_key: :id
     }
@@ -59,22 +59,30 @@ end
 module Associatable
   # Phase IIIb
   def belongs_to(name, options = {})
-    options = BelongsToOptions.new(name.to_s, options)
+    options = BelongsToOptions.new(name, options)
 
     define_method(name) do
-      class_name = options.model_class
+      target_class = options.model_class
       foreign_key_value = self.send(:attributes)[options.foreign_key]
 
-      class_name.where({id: foreign_key_value}).first
+      target_class.where({options.primary_key => foreign_key_value}).first
     end
   end
 
   def has_many(name, options = {})
-    # ...
+    options = HasManyOptions.new(name, self.name, options)
+
+    define_method(name) do
+      target_class = options.model_class
+      primary_key_value = self.send(:attributes)[options.primary_key]
+
+      target_class.where({options.foreign_key => primary_key_value})
+    end
   end
 
   def assoc_options
     # Wait to implement this in Phase IVa. Modify `belongs_to`, too.
+    @assoc_options = {}
   end
 end
 
