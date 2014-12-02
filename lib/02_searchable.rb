@@ -48,26 +48,42 @@ class Relation
     @target_class.parse_all(results)
   end
 
-end
-
-module OldSearchable
-  def where(params)
-    where_line = params.keys.map { |key| "#{key}= ?"}.join(" AND ")
-    values = params.values
-    table = table_name
-
-    results = DBConnection.execute(<<-SQL, *values)
-    SELECT
-    *
-    FROM
-    #{table}
-    WHERE
-    #{where_line}
-    SQL
-
-    self.parse_all(results)
+  def first
+    self.execute.first
   end
+
+  def length
+    self.execute.length
+  end
+
+  def [](index)
+    self.execute[index]
+  end
+
+  def ==(others)
+    self.execute == others
+  end
+
 end
+
+# module OldSearchable
+#   def where(params)
+#     where_line = params.keys.map { |key| "#{key}= ?"}.join(" AND ")
+#     values = params.values
+#     table = table_name
+#
+#     results = DBConnection.execute(<<-SQL, *values)
+#     SELECT
+#     *
+#     FROM
+#     #{table}
+#     WHERE
+#     #{where_line}
+#     SQL
+# 
+#     self.parse_all(results)
+#   end
+# end
 
 ## Testing code below!
 
