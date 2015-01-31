@@ -72,20 +72,12 @@ class Relation
     @target_class.parse_all(results)
   end
 
-  def first
-    self.execute.first
-  end
-
-  def length
-    self.execute.length
-  end
-
-  def [](index)
-    self.execute[index]
-  end
-
-  def ==(others)
-    self.execute == others
+  def method_missing(method, *args, &blk)
+    if [].methods.include?(method)
+      self.execute.send(method, *args, &blk)
+    else
+      super.method_missing(method)
+    end
   end
 
 end

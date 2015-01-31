@@ -18,5 +18,3 @@ class House < SQLObject
 
   finalize!
 end
-
-h = Human.all.first
